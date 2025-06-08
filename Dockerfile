@@ -15,6 +15,6 @@ COPY --from=builder /app/deps /app/deps
 COPY app.py .
 COPY src/ ./src
 
-ENV PYTHONPATH=/app/deps
+ENV PYTHONPATH=/app/deps:/app/src
 
 ENTRYPOINT ["python", "app.py"]
