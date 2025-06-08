@@ -1,12 +1,20 @@
-FROM python:3.11-slim
+# Build stage
+FROM python:3.11-slim AS builder
 
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt --target /app/deps
 
-COPY . .
+# Runtime stage
+FROM python:3.11-slim AS runtime
 
-EXPOSE 8080
+WORKDIR /app
 
-CMD ["python", "app.py"]
+COPY --from=builder /app/deps /app/deps
+COPY app.py .
+COPY src/ ./src
+
+ENV PYTHONPATH=/app/deps
+
+ENTRYPOINT ["python", "app.py"]
