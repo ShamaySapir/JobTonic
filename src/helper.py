@@ -7,6 +7,7 @@ import json
 load_dotenv()  # Load environment variables from .env file
 
 # Set up your client with environment variables
+MAX_COOKIE_SIZE = int(os.getenv('MAX_COOKIE_SIZE', 4000))  # Default to 4000 if not set
 api_key = os.getenv('AZURE_OPENAI_API_KEY')
 endpoint = os.getenv('ENDPOINT')
 version = os.getenv('VERSION')
@@ -108,3 +109,13 @@ def chat(message, history):
         response = client.chat.completions.create(model=deployment, messages=messages)
     
     return response.choices[0].message.content
+
+
+def get_cookie_size_info(history):
+    history_json = json.dumps(history)
+    return {
+        'size': len(history_json),
+        'max_size': MAX_COOKIE_SIZE,
+        'percentage': (len(history_json) / MAX_COOKIE_SIZE) * 100,
+        'entries_count': len(history)
+    }
