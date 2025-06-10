@@ -17,4 +17,9 @@ COPY src/ ./src
 
 ENV PYTHONPATH=/app/deps:/app/src
 
-ENTRYPOINT ["python", "app.py"]
+# ENTRYPOINT ["uvicorn", "app:app", \
+#             "--host", "0.0.0.0", \
+#             "--port", "8080", \
+#             "--workers", "4", \
+#             "--log-level", "info"]
+# ENTRYPOINT ["python", "app.py"]

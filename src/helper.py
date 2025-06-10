@@ -1,7 +1,8 @@
 from dotenv import load_dotenv
 from openai import AzureOpenAI
 import os
-from website import read_website  # Assuming you have a website.py with a read_website function
+from src.website import read_website 
+import json
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -9,7 +10,7 @@ load_dotenv()  # Load environment variables from .env file
 api_key = os.getenv('AZURE_OPENAI_API_KEY')
 endpoint = os.getenv('ENDPOINT')
 version = os.getenv('VERSION')
-deployment = os.getenv('DEPLOYMENT_4_1nano')
+deployment = os.getenv('DEPLOYMENT_4o_mini')
 
 client = AzureOpenAI(
     azure_endpoint=endpoint, 

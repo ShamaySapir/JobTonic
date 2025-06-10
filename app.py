@@ -1,9 +1,11 @@
-from flask import Flask, request, jsonify, make_response
 import os
-from dotenv import load_dotenv
 import uuid
 import json
-from helper import chat  # Assuming you have a helper.py with a read_text_file function
+from dotenv import load_dotenv
+from flask import Flask, request, jsonify, make_response
+from asgiref.wsgi import WsgiToAsgi
+import uvicorn
+from src.helper import chat
 
 
 load_dotenv()  # Load environment variables from .env file
@@ -51,5 +53,8 @@ def chat_endpoint():
 def health():
     return jsonify({'status': 'healthy'})
 
+# --- עטיפה ל-ASGI ---
+app = WsgiToAsgi(app)
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=port, debug=False)
+    uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True)
