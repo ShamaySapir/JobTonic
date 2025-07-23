@@ -98,7 +98,7 @@ def call_tool(reply, messages):
 
 # Your existing chat function (with any imports it needs)
 def chat(message, history):
-    messages = [{"role": "system", "content": "you are a helpful assistant"}] + history + [{"role": "user", "content": message}]
+    messages = [{"role": "system", "content": job_posting_system_prompt}] + history + [{"role": "user", "content": message}]
     print(messages)
     raw_response = client.chat.completions.create(model=deployment, 
                                               messages=messages, tools = [{"type": "function", "function": read_website_function}])
