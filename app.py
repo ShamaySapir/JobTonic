@@ -125,7 +125,6 @@ def create_app():
     return flask_app
 
 
-# יצירת האפליקציות
 flask_app = create_app()
 asgi_app   = WsgiToAsgi(flask_app)
 
