@@ -4,5 +4,5 @@ python-dotenv
 selenium
 bs4
 webdriver_manager
-asgiref             # כדי לעטוף WSGI ל-ASGI
-uvicorn[standard]   # השרת ASGI
+asgiref            
+uvicorn[standard]  
