@@ -9,8 +9,8 @@ from src.helper import chat, get_cookie_size_info
 
 
 load_dotenv()  # Load environment variables from .env file
-MAX_COOKIE_SIZE = int(os.getenv('MAX_COOKIE_SIZE', 4000))  # Default to 4000 if not set
-WARNING_THRESHOLD = float(os.getenv('WARNING_THRESHOLD', 0.8))  # Default to 80% if not set
+MAX_COOKIE_SIZE = int(os.getenv('MAX_COOKIE_SIZE', "4000"))  # Default to 4000 if not set
+WARNING_THRESHOLD = float(os.getenv('WARNING_THRESHOLD', "0.8"))  # Default to 80% if not set
 
 def create_app():
     flask_app = Flask(__name__)
@@ -77,6 +77,45 @@ def create_app():
             flask_app.logger.exception("Unhandled error in /chat")
             return jsonify({'error': 'Internal server error', 'status': 'error'}), 500
 
+
+    @flask_app.route('/clear-history', methods=['POST'])
+    def clear_history():
+        response = jsonify({
+            'message': 'New conversation started',
+            'status': 'success'
+        })
+        response.set_cookie('history', '[]', httponly=True, samesite='Lax')
+        return response
+
+    @flask_app.route('/download-history', methods=['GET'])
+    def download_history():
+        history = json.loads(request.cookies.get('history', '[]'))
+        
+        readable_history = []
+        for msg in history:
+            role = "You" if msg['role'] == 'user' else "Assistant"
+            readable_history.append(f"{role}: {msg['content']}")
+        
+        return jsonify({
+            'history': readable_history,
+            'download_format': '\n\n'.join(readable_history),
+            'status': 'success'
+        })
+
+    @flask_app.route('/summarize-history', methods=['POST'])
+    def summarize_history():
+        history = json.loads(request.cookies.get('history', '[]'))
+        summary = chat("Please summarize our conversation briefly", history)
+        new_history = [{"role": "system", "content": f"Previous conversation summary: {summary}"}]
+        
+        response = jsonify({
+            'message': 'History summarized and conversation continues',
+            'summary': summary,
+            'status': 'success'
+        })
+        
+        response.set_cookie('history', json.dumps(new_history), httponly=True, samesite='Lax')
+        return response
 
     # Health check endpoint
     @flask_app.route('/health', methods=['GET'])

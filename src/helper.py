@@ -46,7 +46,7 @@ def read_text_file(filepath):
 
 
 # The system prompt for job postings
-job_posting_system_prompt = read_text_file("job_posting_system_prompt.txt")
+job_posting_system_prompt = read_text_file("./src/job_posting_system_prompt.txt")
 
 
 def call_tool(reply, messages): 
@@ -98,17 +98,18 @@ def call_tool(reply, messages):
 
 # Your existing chat function (with any imports it needs)
 def chat(message, history):
-    messages = [{"role": "system", "content": job_posting_system_prompt}] + history + [{"role": "user", "content": message}]
+    messages = [{"role": "system", "content": "you are a helpful assistant"}] + history + [{"role": "user", "content": message}]
     print(messages)
-    response = client.chat.completions.create(model=deployment, 
+    raw_response = client.chat.completions.create(model=deployment, 
                                               messages=messages, tools = [{"type": "function", "function": read_website_function}])
-    print(response)
-    if response.choices[0].finish_reason=="tool_calls":
-        message = response.choices[0].message
+    print(raw_response)
+    if raw_response.choices[0].finish_reason=="tool_calls":
+        message = raw_response.choices[0].message
         response = call_tool(message, messages)
-        response = client.chat.completions.create(model=deployment, messages=messages)
+    else:
+        response = raw_response.choices[0].message.content
     
-    return response.choices[0].message.content
+    return response
 
 
 def get_cookie_size_info(history):
